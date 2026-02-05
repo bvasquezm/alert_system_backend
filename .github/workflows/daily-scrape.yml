@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Triggering scrape..."
-          RESP=$(curl -sS -X POST "${API_BASE_URL}/api/scrape" -H "Content-Type: application/json" -w "\n%{http_code}")
+          RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/scrape" -H "Content-Type: application/json" -w "\n%{http_code}")
           BODY=$(echo "$RESP" | sed '$d')
           CODE=$(echo "$RESP" | tail -n1)
           echo "HTTP $CODE"
@@ -46,7 +46,7 @@ jobs:
           max_attempts=40   # ~10 minutes with 15s sleep
           sleep_seconds=15
           while [ $attempt -lt $max_attempts ]; do
-            STATUS_JSON=$(curl -sS "${API_BASE_URL}/api/scrape/status")
+            STATUS_JSON=$(curl -sS -L "${API_BASE_URL}/api/scrape/status")
             echo "Status: $STATUS_JSON"
             IS_RUNNING=$(echo "$STATUS_JSON" | jq -r '.is_running // .isRunning // empty')
             ERROR_MSG=$(echo "$STATUS_JSON" | jq -r '.error // empty')
@@ -74,7 +74,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "Sending Teams report..."
-          RESP=$(curl -sS -X POST "${API_BASE_URL}/api/teams/report" -H "Content-Type: application/json" -w "\n%{http_code}")
+          RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/teams/report" -H "Content-Type: application/json" -w "\n%{http_code}")
           BODY=$(echo "$RESP" | sed '$d')
           CODE=$(echo "$RESP" | tail -n1)
           echo "HTTP $CODE"
