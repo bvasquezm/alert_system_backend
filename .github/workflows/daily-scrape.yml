@@ -32,9 +32,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Playwright browsers + deps
+      - name: Install Playwright system dependencies
+        uses: microsoft/playwright-github-action@v1
+        with:
+          with-deps: true
+
+      - name: Install Playwright Chromium browser
         run: |
-          python -m playwright install --with-deps
+          python -m playwright install chromium
 
       - name: Run scraper synchronously and send Teams report
         run: |
