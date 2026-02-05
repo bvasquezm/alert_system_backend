@@ -43,8 +43,8 @@ jobs:
         run: |
           set -euo pipefail
           attempt=0
-          max_attempts=40   # ~10 minutes with 15s sleep
-          sleep_seconds=15
+          max_attempts=10
+          sleep_seconds=60
           while [ $attempt -lt $max_attempts ]; do
             STATUS_JSON=$(curl -sS -L "${API_BASE_URL}/api/scrape/status")
             echo "Status: $STATUS_JSON"
