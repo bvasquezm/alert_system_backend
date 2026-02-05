@@ -22,6 +22,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js (for Playwright deps)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -32,14 +37,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Playwright system dependencies
-        uses: microsoft/playwright-github-action@v1
-        with:
-          with-deps: true
+      - name: Install Playwright system dependencies (Ubuntu 24.04 compatible)
+        run: |
+          npx playwright install --with-deps
 
-      - name: Install Playwright Chromium browser
+      - name: Install Playwright Chromium browser (Python)
         run: |
           python -m playwright install chromium
+
+      - name: Install jq for JSON parsing
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
 
       - name: Run scraper synchronously and send Teams report
         run: |
