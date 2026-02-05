@@ -17,7 +17,7 @@ jobs:
       MONGO_URI: ${{ secrets.MONGO_URI }}
       TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
       API_BASE_URL: ${{ secrets.API_BASE_URL }}
-      SCRAPER_CONFIG_PATH: ia/alert_system/backend/config_components.json
+      SCRAPER_CONFIG_PATH: config_components.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +28,6 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        working-directory: ia/alert_system/backend
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -38,7 +37,6 @@ jobs:
           python -m playwright install --with-deps
 
       - name: Run scraper synchronously and send Teams report
-        working-directory: ia/alert_system/backend
         run: |
           python run_scrape_and_report.py
 
