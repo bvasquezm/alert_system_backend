@@ -23,7 +23,7 @@ app = Flask(__name__,
             static_folder='web/static')
 CORS(app)
 
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://admin:password@mongodb:27017/scraper_alerts?authSource=admin')
+MONGO_URI = os.getenv('MONGO_URI')
 client = MongoClient(MONGO_URI)
 db = client['scraper_alerts']
 alerts_collection = db['alerts']
