@@ -6,80 +6,85 @@ on:
     - cron: '0 11 * * *'
   workflow_dispatch:
 
+joconcurrency:
+  group: daily-scrape-cli
+  cancel-in-progress: false
+
 jobs:
-  run-scrape-and-report:
+  run-scrape-cli:
     runs-on: ubuntu-latest
     env:
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
       API_BASE_URL: ${{ secrets.API_BASE_URL }}
+      SCRAPER_CONFIG_PATH: ia/alert_system/backend/config_components.json
     steps:
-      - name: Validate configuration
-        run: |
-          if [ -z "${API_BASE_URL}" ]; then
-            echo "API_BASE_URL is not set. Configure it in Repo Settings > Secrets and variables > Actions."
-            exit 1
-          fi
-          echo "Using API_BASE_URL=${API_BASE_URL}"
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Install tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y jq
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-      - name: Trigger scrape
+      - name: Install Python dependencies
+        working-directory: ia/alert_system/backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install Playwright browsers + deps
+        run: |
+          python -m playwright install --with-deps
+
+      - name: Run scraper synchronously and send Teams report
+        working-directory: ia/alert_system/backend
+        run: |
+          python run_scrape_and_report.py
+
+      - name: Verify latest report via API
         run: |
           set -euo pipefail
-          echo "Triggering scrape..."
-          RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/scrape" -H "Content-Type: application/json" -w "\n%{http_code}")
+          if [ -z "${API_BASE_URL}" ]; then
+            echo "API_BASE_URL is not set. Configure it as a repository secret."
+            exit 1
+          fi
+          echo "Verifying latest report from ${API_BASE_URL}/api/report"
+          RESP=$(curl -sS -L "${API_BASE_URL}/api/report" -w "\n%{http_code}")
           BODY=$(echo "$RESP" | sed '$d')
           CODE=$(echo "$RESP" | tail -n1)
           echo "HTTP $CODE"
-          echo "Body: $BODY"
-          if [ "$CODE" -ne 202 ] && [ "$CODE" -ne 409 ]; then
-            echo "Failed to trigger scrape"
+          if [ "$CODE" -ne 200 ]; then
+            echo "No report available (HTTP $CODE)"
+            echo "$BODY"
             exit 1
           fi
-
-      - name: Wait for scrape completion
-        run: |
-          set -euo pipefail
-          attempt=0
-          max_attempts=10
-          sleep_seconds=60
-          while [ $attempt -lt $max_attempts ]; do
-            STATUS_JSON=$(curl -sS -L "${API_BASE_URL}/api/scrape/status")
-            echo "Status: $STATUS_JSON"
-            IS_RUNNING=$(echo "$STATUS_JSON" | jq -r '.is_running // .isRunning // empty')
-            ERROR_MSG=$(echo "$STATUS_JSON" | jq -r '.error // empty')
-
-            if [ "$IS_RUNNING" = "false" ] || [ "$IS_RUNNING" = "0" ] || [ -z "$IS_RUNNING" ]; then
-              if [ -n "$ERROR_MSG" ] && [ "$ERROR_MSG" != "null" ]; then
-                echo "Scrape finished with error: $ERROR_MSG"
-                exit 1
-              fi
-              echo "Scrape finished successfully."
-              break
-            fi
-
-            attempt=$((attempt+1))
-            echo "Still running... attempt $attempt/$max_attempts; sleeping ${sleep_seconds}s"
-            sleep $sleep_seconds
-          done
-
-          if [ $attempt -ge $max_attempts ]; then
-            echo "Timeout waiting for scrape to finish."
+          END_TIME=$(echo "$BODY" | jq -r '.end_time // empty')
+          if [ -z "$END_TIME" ]; then
+            echo "end_time not present in report payload"
+            echo "$BODY"
             exit 1
           fi
+          END_EPOCH=$(date -d "$END_TIME" +%s)
+          NOW_EPOCH=$(date +%s)
+          DIFF=$((NOW_EPOCH - END_EPOCH))
+          # Accept reports generated within the last 45 minutes
+          if [ $DIFF -gt 2700 ]; then
+            echo "Latest report is older than 45 minutes (diff=${DIFF}s)"
+            exit 1
+          fi
+          echo "Report is recent (diff=${DIFF}s). Verification OK."
 
-      - name: Send Teams report
+      - name: Send Teams report via API
         run: |
           set -euo pipefail
-          echo "Sending Teams report..."
+          echo "Triggering Teams report via API..."
           RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/teams/report" -H "Content-Type: application/json" -w "\n%{http_code}")
           BODY=$(echo "$RESP" | sed '$d')
           CODE=$(echo "$RESP" | tail -n1)
           echo "HTTP $CODE"
           echo "Body: $BODY"
           if [ "$CODE" -ne 200 ]; then
-            echo "Teams report failed."
+            echo "Teams report API call failed"
             exit 1
           fi
