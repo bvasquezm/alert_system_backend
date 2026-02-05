@@ -6,7 +6,7 @@ on:
     - cron: '0 11 * * *'
   workflow_dispatch:
 
-joconcurrency:
+concurrency:
   group: daily-scrape-cli
   cancel-in-progress: false
 
