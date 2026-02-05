@@ -9,6 +9,7 @@ import threading
 from dotenv import load_dotenv
 import logging
 import urllib.error
+import certifi
 
 from orchestrator import ScraperOrchestrator
 from services import alerts_service, scraper_service, report_service, teams_service
@@ -24,7 +25,23 @@ app = Flask(__name__,
 CORS(app)
 
 MONGO_URI = os.getenv('MONGO_URI')
-client = MongoClient(MONGO_URI)
+
+# Configurar TLS con CA bundle confiable para evitar errores de handshake
+mongo_client_kwargs = {
+    'serverSelectionTimeoutMS': int(os.getenv('MONGO_SERVER_SELECTION_TIMEOUT_MS', '30000')),
+    'connectTimeoutMS': int(os.getenv('MONGO_CONNECT_TIMEOUT_MS', '20000')),
+    'socketTimeoutMS': int(os.getenv('MONGO_SOCKET_TIMEOUT_MS', '20000')),
+}
+
+try:
+    mongo_client_kwargs.update({
+        'tls': True,
+        'tlsCAFile': certifi.where(),
+    })
+except Exception as e:
+    logger.warning(f"No se pudo configurar certifi: {type(e).__name__}: {str(e)}")
+
+client = MongoClient(MONGO_URI, **mongo_client_kwargs)
 db = client['scraper_alerts']
 alerts_collection = db['alerts']
 results_collection = db['results']
