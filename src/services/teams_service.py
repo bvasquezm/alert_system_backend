@@ -19,7 +19,8 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         alert: Diccionario con información del alert
     
     Returns:
-        Diccionario con componentes y páginas donde tienen conflictos
+        Diccionario con componentes DISTINTOS y páginas donde tienen conflictos.
+        Agrupa todas las estrategias faltantes de un componente en una sola entrada.
     """
     components_issues = {}
     pages = alert.get('pages', [])
@@ -44,13 +45,12 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
                 
-                for strategy_name, found in strategies_found.items():
-                    if not found:
-                        # Usar formato "Component - Strategy" para las estrategias
-                        full_name = f"{component_name} - {strategy_name}"
-                        if full_name not in components_issues:
-                            components_issues[full_name] = set()
-                        components_issues[full_name].add(page_type)
+                # Si hay al menos una estrategia faltante, agregar el componente
+                has_missing_strategies = any(not found for found in strategies_found.values())
+                if has_missing_strategies:
+                    if component_name not in components_issues:
+                        components_issues[component_name] = set()
+                    components_issues[component_name].add(page_type)
     
     return components_issues
 
@@ -65,14 +65,19 @@ def generate_teams_message(filtered_results: list) -> str:
     Returns:
         String con el mensaje formateado en HTML/Markdown para Teams
     """
-    total_alerts = sum(r.get('alerts_count', 0) for r in filtered_results)
+    # Calcular total de componentes DISTINTOS con problemas (no alertas individuales)
+    total_distinct_components = 0
+    for r in filtered_results:
+        if r.get('alerts_count', 0) > 0:
+            components_issues = extract_components_issues(r)
+            total_distinct_components += len(components_issues)
     
-    if total_alerts == 0:
+    if total_distinct_components == 0:
         return 'No hay alertas nuevas durante las últimas 24 horas.'
     
     today = datetime.now().strftime('%d/%m/%Y')
     message = f"**ALERTAS - ÚLTIMAS 24 HORAS [{today}]**<br><br>"
-    message += f"**Total alertas: {total_alerts}**<br>"
+    message += f"**Total alertas: {total_distinct_components}**<br>"
     message += f"<br>---<br><br>"
     
     for alert in filtered_results:
@@ -86,23 +91,26 @@ def generate_teams_message(filtered_results: list) -> str:
             except ValueError:
                 timestamp = 'N/A'
         
-        message += (
-            f"**País:** {alert.get('country')}<br>"
-            f"**Estado:** {alert.get('status')}<br>"
-            f"**Alertas:** {alert.get('alerts_count')}<br>"
-            f"**Fecha/Hora:** {timestamp}<br>"
-        )
+        # Extraer componentes DISTINTOS para este país
+        components_issues = extract_components_issues(alert)
+        distinct_count = len(components_issues)
         
-        # Agregar componentes con conflictos si hay alertas
-        if alert.get('alerts_count', 0) > 0:
-            components_issues = extract_components_issues(alert)
+        # Solo mostrar países que tengan alertas
+        if distinct_count > 0:
+            message += (
+                f"**País:** {alert.get('country')}<br>"
+                f"**Estado:** {alert.get('status')}<br>"
+                f"**Alertas:** {distinct_count}<br>"
+                f"**Fecha/Hora:** {timestamp}<br>"
+            )
             
+            # Agregar componentes con conflictos
             if components_issues:
                 message += f"<br>**Componentes con conflictos:**<br>"
                 for comp_name, page_types in components_issues.items():
                     message += f"- {comp_name}: {', '.join(sorted(page_types))}<br>"
-        
-        message += "<br>"
+            
+            message += "<br>"
     
     return message
 
