@@ -11,8 +11,8 @@ import logging
 import urllib.error
 import certifi
 
-from orchestrator import ScraperOrchestrator
-from services import alerts_service, scraper_service, report_service, teams_service
+from src.orchestrator import ScraperOrchestrator
+from src.services import alerts_service, scraper_service, report_service, teams_service
 
 load_dotenv()
 

@@ -7,6 +7,33 @@ Backend Flask con endpoints para:
 - `/api/scrape` y `/api/scrape/status`: Disparar scraping y consultar estado
 - `/api/report` y `/api/teams/report`: Último reporte y envío a Microsoft Teams
 
+## Estructura del Proyecto
+
+```
+/
+├── app.py                      # Aplicación Flask principal
+├── run_scrape_and_report.py    # Script CLI para ejecutar scraping
+├── config_components.json      # Configuración de componentes a scrapear
+├── requirements.txt            # Dependencias Python
+├── vercel.json                # Configuración de Vercel
+└── src/                       # Código fuente principal
+    ├── orchestrator/          # Orquestador de scraping paralelo
+    │   ├── __init__.py
+    │   └── scraper_orchestrator.py
+    ├── scraper/              # Lógica de scraping con Playwright
+    │   ├── __init__.py
+    │   └── component_scraper.py
+    ├── storage/              # Operaciones de base de datos
+    │   ├── __init__.py
+    │   └── alert_storage.py
+    └── services/             # Servicios de aplicación
+        ├── __init__.py
+        ├── alerts_service.py
+        ├── report_service.py
+        ├── scraper_service.py
+        └── teams_service.py
+```
+
 ## Requisitos
 
 - Python 3.11+
@@ -33,4 +60,4 @@ La UI de ejemplo (estática) está en el repo original; este backend no sirve `w
 
 - Docker con base `mcr.microsoft.com/playwright/python:v1.40.0-jammy`
 - Fly.io / EC2 free tier para API 24/7
-- GitHub Actions para job diario llamando `orchestrator.py`
+- GitHub Actions para job diario llamando `run_scrape_and_report.py`
