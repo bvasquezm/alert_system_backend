@@ -39,11 +39,6 @@
               "strategy_name": "Upsell",
               "container_class": "jsx-2800840357",
               "text_pattern": "Más opciones para elegir"
-            },
-            {
-              "strategy_name": "Cross Sell",
-              "container_class": "jsx-2800840357",
-              "text_pattern": "Complementa tu compra"
             }
           ]
         }
@@ -163,11 +158,6 @@
               "strategy_name": "Upsell",
               "container_class": "jsx-2800840357",
               "text_pattern": "Más opciones para elegir"
-            },
-            {
-              "strategy_name": "Cross Sell",
-              "container_class": "jsx-2800840357",
-              "text_pattern": "Complementa tu producto"
             }
           ]
         }
