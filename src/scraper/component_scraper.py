@@ -445,30 +445,51 @@ class ComponentScraper:
     def _create_missing_component_alert(self, component: Dict, scrape_results: Dict, page_type: str) -> List[Dict]:
         """Crea alertas para componentes y estrategias faltantes"""
         alerts = []
-        
+
+        # Verificar si el componente tiene estrategias definidas (en la configuración)
+        has_strategy_config = 'carousel_strategies' in component or 'text_strategies' in component
+
         # Si el componente no fue encontrado
         if not component['found']:
-            message = f"Componente '{component['name']}' no encontrado en {scrape_results['page_type']}"
-            alerts.append({
-                'date': scrape_results['timestamp'],
-                'country': scrape_results['country'],
-                'page_type': scrape_results['page_type'],
-                'component': component['name'],
-                'status': 'MISSING_COMPONENT',
-                'message': message
-            })
-        
+            # Si tiene estrategias configuradas, generar alertas para cada estrategia
+            if has_strategy_config:
+                # Obtener las estrategias configuradas
+                strategies_config = component.get('carousel_strategies') or component.get('text_strategies', [])
+                for strategy_config in strategies_config:
+                    strategy_name = strategy_config.get('strategy_name', 'Unknown')
+                    message = f"Estrategia '{strategy_name}' no encontrada - componente contenedor '{component['name']}' no presente"
+                    alerts.append({
+                        'date': scrape_results['timestamp'],
+                        'country': scrape_results['country'],
+                        'page_type': scrape_results['page_type'],
+                        'component': strategy_name,
+                        'status': 'MISSING_COMPONENT',
+                        'message': message
+                    })
+            else:
+                # Solo generar alerta del componente si NO tiene estrategias definidas
+                message = f"Componente '{component['name']}' no encontrado en {scrape_results['page_type']}"
+                alerts.append({
+                    'date': scrape_results['timestamp'],
+                    'country': scrape_results['country'],
+                    'page_type': scrape_results['page_type'],
+                    'component': component['name'],
+                    'status': 'MISSING_COMPONENT',
+                    'message': message
+                })
+
         elif component['details'] and 'strategies' in component['details']:
+            # El componente se encontró, verificar estrategias específicas
             strategies = component['details'].get('strategies', {})
             strategies_found = strategies.get('strategies_found', {})
             potential_matches = strategies.get('potential_matches', {})
-            
+
             for strategy_name, found in strategies_found.items():
                 if found:
                     continue
                 candidates = potential_matches.get(strategy_name, []) if potential_matches else []
                 has_candidates = len(candidates) > 0
-                
+
                 if has_candidates:
                     sample = "; ".join([c[:80] + ('...' if len(c) > 80 else '') for c in candidates[:3]])
                     message = (
@@ -477,16 +498,16 @@ class ComponentScraper:
                     )
                 else:
                     message = f"Estrategia '{strategy_name}' no encontrada en componente '{component['name']}'"
-                
+
                 alerts.append({
                     'date': scrape_results['timestamp'],
                     'country': scrape_results['country'],
                     'page_type': scrape_results['page_type'],
-                    'component': f"{component['name']} - {strategy_name}",
+                    'component': strategy_name,
                     'status': 'MISSING_COMPONENT',
                     'message': message
                 })
-        
+
         return alerts
 
 

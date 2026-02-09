@@ -14,53 +14,52 @@ logger = logging.getLogger(__name__)
 def extract_components_issues(alert: Dict) -> Dict[str, set]:
     """
     Extraer componentes con conflictos de un alert
-    
+
     Args:
         alert: Diccionario con información del alert
-    
+
     Returns:
         Diccionario con componentes DISTINTOS y páginas donde tienen conflictos.
-        Para componentes con estrategias (como Recommendation Carousels), solo reporta
-        las estrategias faltantes individuales, no el componente padre.
+        Reporta estrategias individuales cuando aplica.
     """
     components_issues = {}
     pages = alert.get('pages', [])
-    
+
     for page in pages:
         page_type = page.get('page_type', 'N/A')
         components = page.get('components', [])
-        
+
         for component in components:
             component_name = component.get('name', 'Unknown')
             component_found = component.get('found', False)
             details = component.get('details')
-            
+
             # Verificar si hay estrategias con problemas
             has_strategies = (
-                details and 
-                isinstance(details, dict) and 
-                'strategies' in details and 
+                details and
+                isinstance(details, dict) and
+                'strategies' in details and
                 details.get('strategies') is not None
             )
-            
+
             if has_strategies:
-                # Si el componente tiene estrategias, solo reportar las estrategias faltantes
+                # Si el componente tiene estrategias, reportar las estrategias faltantes
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
-                
+
                 # Agregar cada estrategia faltante como componente individual
                 for strategy_name, found in strategies_found.items():
                     if not found:
                         if strategy_name not in components_issues:
                             components_issues[strategy_name] = set()
                         components_issues[strategy_name].add(page_type)
-            
-            # Si el componente no fue encontrado y NO tiene estrategias, agregarlo
+
             elif not component_found:
+                # Si el componente no fue encontrado y no tiene estrategias, reportarlo
                 if component_name not in components_issues:
                     components_issues[component_name] = set()
                 components_issues[component_name].add(page_type)
-    
+
     return components_issues
 
 
