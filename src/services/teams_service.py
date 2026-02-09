@@ -138,7 +138,7 @@ def generate_and_send_teams_report(results_collection, webhook_url: str) -> Dict
         ValueError: Si no hay webhook configurado o no hay reportes
         urllib.error.HTTPError: Si hay error al enviar a Teams
     """
-    from services.report_service import filter_results_by_time
+    from src.services.report_service import filter_results_by_time
     
     if not webhook_url:
         raise ValueError('TEAMS_WEBHOOK_URL not configured')
