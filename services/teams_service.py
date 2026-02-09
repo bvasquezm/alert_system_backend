@@ -31,7 +31,6 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         for component in components:
             details = component.get('details')
             
-            # Verificar si hay estrategias con problemas
             if details and isinstance(details, dict):
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})

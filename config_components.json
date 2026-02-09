@@ -2,7 +2,7 @@
   "CL": {
     "setup_product_url": "https://www.sodimac.cl/sodimac-cl/articulo/110574261/toldo-plegable-3x3-metros-azul/110574262",
     "PDP": {
-      "url_example": "https://www.sodimac.cl/sodimac-cl/articulo/144964009/juego-de-balcon-de-terraza-sao-paulo-4-personas-beige/144964010",
+      "url_example": "https://www.sodimac.cl/sodimac-cl/articulo/110169152/sanitario-one-piece-a-piso-30-5-cm-7-litros-roma/110169156",
       "components": [
         {
           "name": "Shop the Project",
@@ -39,11 +39,6 @@
               "strategy_name": "Upsell",
               "container_class": "jsx-2800840357",
               "text_pattern": "Más opciones para elegir"
-            },
-            {
-              "strategy_name": "Cross Sell",
-              "container_class": "jsx-2800840357",
-              "text_pattern": "Complementa tu compra"
             }
           ]
         }
