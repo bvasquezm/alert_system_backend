@@ -326,17 +326,29 @@ class ComponentScraper:
             'found': False,
             'details': None
         }
-        
+
         # Buscar componente según tipo
         found, elements = self._check_component_by_identifier_type(soup, component)
         result['found'] = found
-        
+
         # Si se encontró, extraer detalles (estrategias, etc.)
         if found:
             result['details'] = self._build_component_details(component, elements)
         else:
             self._log_component_not_found(component)
-        
+            # Si no se encontró pero tiene estrategias configuradas, construir details
+            # con todas las estrategias marcadas como no encontradas
+            if 'carousel_strategies' in component or 'text_strategies' in component:
+                strategies_config = component.get('carousel_strategies') or component.get('text_strategies', [])
+                strategies_found = {s['strategy_name']: False for s in strategies_config}
+                result['details'] = {
+                    'strategies': {
+                        'strategies_found': strategies_found,
+                        'strategies_details': {name: {'found_in': []} for name in strategies_found},
+                        'potential_matches': {}
+                    }
+                }
+
         return result
     
     def _log_component_not_found(self, component: Dict) -> None:
