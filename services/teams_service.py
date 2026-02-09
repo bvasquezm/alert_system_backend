@@ -29,8 +29,17 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         components = page.get('components', [])
         
         for component in components:
-            details = component.get('details')
+            component_name = component.get('name', 'N/A')
+            component_found = component.get('found', True)
             
+            # Si el componente no fue encontrado, agregarlo directamente
+            if not component_found:
+                if component_name not in components_issues:
+                    components_issues[component_name] = set()
+                components_issues[component_name].add(page_type)
+            
+            # Si el componente fue encontrado, verificar estrategias
+            details = component.get('details')
             if details and isinstance(details, dict):
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
