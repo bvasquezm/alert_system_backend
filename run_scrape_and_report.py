@@ -11,8 +11,8 @@ import certifi
 from pymongo import MongoClient
 
 # Local imports from backend
-from orchestrator import ScraperOrchestrator
-from services import teams_service
+from src.orchestrator import ScraperOrchestrator
+from src.services import teams_service
 
 load_dotenv()
 

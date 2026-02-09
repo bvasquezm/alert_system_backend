@@ -4,8 +4,8 @@ Utiliza ThreadPoolExecutor para ejecutar múltiples scrapers de forma concurrent
 Guarda alertas en MongoDB
 """
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from scraper import ComponentScraper
-from storage import AlertStorage
+from src.scraper import ComponentScraper
+from src.storage import AlertStorage
 import json
 from datetime import datetime
 from typing import Dict, List
