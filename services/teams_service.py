@@ -30,7 +30,8 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         
         for component in components:
             component_name = component.get('name', 'N/A')
-            component_found = component.get('found', True)
+            # Default to False to ensure missing components are detected
+            component_found = component.get('found', False)
             
             # Si el componente no fue encontrado, agregarlo directamente
             if not component_found:
