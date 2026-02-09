@@ -19,7 +19,8 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         alert: Diccionario con información del alert
     
     Returns:
-        Diccionario con componentes y páginas donde tienen conflictos
+        Diccionario con componentes DISTINTOS y páginas donde tienen conflictos.
+        Agrupa todas las estrategias faltantes de un componente en una sola entrada.
     """
     components_issues = {}
     pages = alert.get('pages', [])
@@ -29,18 +30,27 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         components = page.get('components', [])
         
         for component in components:
+            component_name = component.get('name', 'Unknown')
+            component_found = component.get('found', False)
             details = component.get('details')
             
+            # Si el componente no fue encontrado, agregarlo a la lista de problemas
+            if not component_found:
+                if component_name not in components_issues:
+                    components_issues[component_name] = set()
+                components_issues[component_name].add(page_type)
+            
             # Verificar si hay estrategias con problemas
-            if details and isinstance(details, dict):
+            elif details and isinstance(details, dict):
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
                 
-                for strategy_name, found in strategies_found.items():
-                    if not found:
-                        if strategy_name not in components_issues:
-                            components_issues[strategy_name] = set()
-                        components_issues[strategy_name].add(page_type)
+                # Si hay al menos una estrategia faltante, agregar el componente
+                has_missing_strategies = any(not found for found in strategies_found.values())
+                if has_missing_strategies:
+                    if component_name not in components_issues:
+                        components_issues[component_name] = set()
+                    components_issues[component_name].add(page_type)
     
     return components_issues
 
@@ -55,17 +65,33 @@ def generate_teams_message(filtered_results: list) -> str:
     Returns:
         String con el mensaje formateado en HTML/Markdown para Teams
     """
-    total_alerts = sum(r.get('alerts_count', 0) for r in filtered_results)
+    # Pre-calcular componentes distintos para cada país (evita cálculo duplicado)
+    results_with_components = []
+    total_distinct_components = 0
     
-    if total_alerts == 0:
+    for r in filtered_results:
+        components_issues = extract_components_issues(r)
+        if len(components_issues) > 0:
+            results_with_components.append({
+                'alert': r,
+                'components_issues': components_issues,
+                'distinct_count': len(components_issues)
+            })
+            total_distinct_components += len(components_issues)
+    
+    if total_distinct_components == 0:
         return 'No hay alertas nuevas durante las últimas 24 horas.'
     
     today = datetime.now().strftime('%d/%m/%Y')
     message = f"**ALERTAS - ÚLTIMAS 24 HORAS [{today}]**<br><br>"
-    message += f"**Total alertas: {total_alerts}**<br>"
+    message += f"**Total alertas: {total_distinct_components}**<br>"
     message += f"<br>---<br><br>"
     
-    for alert in filtered_results:
+    for result in results_with_components:
+        alert = result['alert']
+        components_issues = result['components_issues']
+        distinct_count = result['distinct_count']
+        
         timestamp = alert.get('timestamp')
         if hasattr(timestamp, 'isoformat'):
             timestamp = timestamp.isoformat()
@@ -79,18 +105,14 @@ def generate_teams_message(filtered_results: list) -> str:
         message += (
             f"**País:** {alert.get('country')}<br>"
             f"**Estado:** {alert.get('status')}<br>"
-            f"**Alertas:** {alert.get('alerts_count')}<br>"
+            f"**Alertas:** {distinct_count}<br>"
             f"**Fecha/Hora:** {timestamp}<br>"
         )
         
-        # Agregar componentes con conflictos si hay alertas
-        if alert.get('alerts_count', 0) > 0:
-            components_issues = extract_components_issues(alert)
-            
-            if components_issues:
-                message += f"<br>**Componentes con conflictos:**<br>"
-                for comp_name, page_types in components_issues.items():
-                    message += f"- {comp_name}: {', '.join(sorted(page_types))}<br>"
+        # Agregar componentes con conflictos
+        message += f"<br>**Componentes con conflictos:**<br>"
+        for comp_name, page_types in components_issues.items():
+            message += f"- {comp_name}: {', '.join(sorted(page_types))}<br>"
         
         message += "<br>"
     
