@@ -29,18 +29,28 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
         components = page.get('components', [])
         
         for component in components:
+            component_name = component.get('name', 'Unknown')
+            component_found = component.get('found', False)
             details = component.get('details')
             
+            # Si el componente no fue encontrado, agregarlo a la lista de problemas
+            if not component_found:
+                if component_name not in components_issues:
+                    components_issues[component_name] = set()
+                components_issues[component_name].add(page_type)
+            
             # Verificar si hay estrategias con problemas
-            if details and isinstance(details, dict):
+            elif details and isinstance(details, dict):
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
                 
                 for strategy_name, found in strategies_found.items():
                     if not found:
-                        if strategy_name not in components_issues:
-                            components_issues[strategy_name] = set()
-                        components_issues[strategy_name].add(page_type)
+                        # Usar formato "Component - Strategy" para las estrategias
+                        full_name = f"{component_name} - {strategy_name}"
+                        if full_name not in components_issues:
+                            components_issues[full_name] = set()
+                        components_issues[full_name].add(page_type)
     
     return components_issues
 
