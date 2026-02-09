@@ -46,7 +46,7 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
             if has_strategies:
                 # Si el componente tiene estrategias, solo reportar las estrategias faltantes
                 strategies = details.get('strategies', {})
-                strategies_found = strategies.get('strategies_found', {}) if strategies else {}
+                strategies_found = strategies.get('strategies_found', {})
                 
                 # Agregar cada estrategia faltante como componente individual
                 for strategy_name, found in strategies_found.items():
