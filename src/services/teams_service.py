@@ -65,11 +65,18 @@ def generate_teams_message(filtered_results: list) -> str:
     Returns:
         String con el mensaje formateado en HTML/Markdown para Teams
     """
-    # Calcular total de componentes DISTINTOS con problemas (no alertas individuales)
+    # Pre-calcular componentes distintos para cada país (evita cálculo duplicado)
+    results_with_components = []
     total_distinct_components = 0
+    
     for r in filtered_results:
-        if r.get('alerts_count', 0) > 0:
-            components_issues = extract_components_issues(r)
+        components_issues = extract_components_issues(r)
+        if len(components_issues) > 0:
+            results_with_components.append({
+                'alert': r,
+                'components_issues': components_issues,
+                'distinct_count': len(components_issues)
+            })
             total_distinct_components += len(components_issues)
     
     if total_distinct_components == 0:
@@ -80,7 +87,11 @@ def generate_teams_message(filtered_results: list) -> str:
     message += f"**Total alertas: {total_distinct_components}**<br>"
     message += f"<br>---<br><br>"
     
-    for alert in filtered_results:
+    for result in results_with_components:
+        alert = result['alert']
+        components_issues = result['components_issues']
+        distinct_count = result['distinct_count']
+        
         timestamp = alert.get('timestamp')
         if hasattr(timestamp, 'isoformat'):
             timestamp = timestamp.isoformat()
@@ -91,26 +102,19 @@ def generate_teams_message(filtered_results: list) -> str:
             except ValueError:
                 timestamp = 'N/A'
         
-        # Extraer componentes DISTINTOS para este país
-        components_issues = extract_components_issues(alert)
-        distinct_count = len(components_issues)
+        message += (
+            f"**País:** {alert.get('country')}<br>"
+            f"**Estado:** {alert.get('status')}<br>"
+            f"**Alertas:** {distinct_count}<br>"
+            f"**Fecha/Hora:** {timestamp}<br>"
+        )
         
-        # Solo mostrar países que tengan alertas
-        if distinct_count > 0:
-            message += (
-                f"**País:** {alert.get('country')}<br>"
-                f"**Estado:** {alert.get('status')}<br>"
-                f"**Alertas:** {distinct_count}<br>"
-                f"**Fecha/Hora:** {timestamp}<br>"
-            )
-            
-            # Agregar componentes con conflictos
-            if components_issues:
-                message += f"<br>**Componentes con conflictos:**<br>"
-                for comp_name, page_types in components_issues.items():
-                    message += f"- {comp_name}: {', '.join(sorted(page_types))}<br>"
-            
-            message += "<br>"
+        # Agregar componentes con conflictos
+        message += f"<br>**Componentes con conflictos:**<br>"
+        for comp_name, page_types in components_issues.items():
+            message += f"- {comp_name}: {', '.join(sorted(page_types))}<br>"
+        
+        message += "<br>"
     
     return message
 
