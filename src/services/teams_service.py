@@ -20,7 +20,8 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
     
     Returns:
         Diccionario con componentes DISTINTOS y páginas donde tienen conflictos.
-        Agrupa todas las estrategias faltantes de un componente en una sola entrada.
+        Para componentes con estrategias (como Recommendation Carousels), solo reporta
+        las estrategias faltantes individuales, no el componente padre.
     """
     components_issues = {}
     pages = alert.get('pages', [])
@@ -34,23 +35,31 @@ def extract_components_issues(alert: Dict) -> Dict[str, set]:
             component_found = component.get('found', False)
             details = component.get('details')
             
-            # Si el componente no fue encontrado, agregarlo a la lista de problemas
-            if not component_found:
-                if component_name not in components_issues:
-                    components_issues[component_name] = set()
-                components_issues[component_name].add(page_type)
-            
             # Verificar si hay estrategias con problemas
-            elif details and isinstance(details, dict):
+            has_strategies = (
+                details and 
+                isinstance(details, dict) and 
+                'strategies' in details and 
+                details.get('strategies') is not None
+            )
+            
+            if has_strategies:
+                # Si el componente tiene estrategias, solo reportar las estrategias faltantes
                 strategies = details.get('strategies', {})
                 strategies_found = strategies.get('strategies_found', {})
                 
-                # Si hay al menos una estrategia faltante, agregar el componente
-                has_missing_strategies = any(not found for found in strategies_found.values())
-                if has_missing_strategies:
-                    if component_name not in components_issues:
-                        components_issues[component_name] = set()
-                    components_issues[component_name].add(page_type)
+                # Agregar cada estrategia faltante como componente individual
+                for strategy_name, found in strategies_found.items():
+                    if not found:
+                        if strategy_name not in components_issues:
+                            components_issues[strategy_name] = set()
+                        components_issues[strategy_name].add(page_type)
+            
+            # Si el componente no fue encontrado y NO tiene estrategias, agregarlo
+            elif not component_found:
+                if component_name not in components_issues:
+                    components_issues[component_name] = set()
+                components_issues[component_name].add(page_type)
     
     return components_issues
 
