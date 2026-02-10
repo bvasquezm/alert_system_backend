@@ -58,10 +58,6 @@
               "text_pattern": "Últimos vistos"
             },
             {
-              "strategy_name": "Purchased With Recently Purchased",
-              "text_pattern": "Completa tu proyecto"
-            },
-            {
               "strategy_name": "Popularity",
               "text_pattern": "Populares"
             }
@@ -610,7 +606,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_pattern": "Vistos recentemente",
+              "text_pattern": "Vistos recientemente",
               "container_class": "Carousel-module__title___1nNbu"
             }
           ]
