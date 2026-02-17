@@ -307,7 +307,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_pattern": "Vistos Recientemente",
+              "text_pattern": "Vistos recientemente",
               "container_class": "jsx-1685098791 title desktop"
             }
           ]
