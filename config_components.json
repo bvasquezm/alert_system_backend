@@ -324,37 +324,37 @@
           "name": "Shop the Project",
           "identifier_type": "data-testid",
           "identifier_value": "shop-project-container",
-          "required": true
+          "required": false
         },
         {
           "name": "Buy Together",
           "identifier_type": "data-testid",
           "identifier_value": "buy-together",
-          "required": true
+          "required": false
         },
         {
           "name": "Pills Button",
           "identifier_type": "data-testid",
           "identifier_value": "pills-button-carousel",
-          "required": true
+          "required": false
         },
         {
           "name": "Tabla Comparativa",
           "identifier_type": "class",
           "identifier_value": "comparator",
-          "required": true
+          "required": false
         },
         {
           "name": "Cross Sell",
           "identifier_type": "class",
           "identifier_value": "jsx-2454217370 cross-selling-container-v2",
-          "required": true
+          "required": false
         },
         {
           "name": "Recommendation Carousels",
           "identifier_type": "data-testid",
           "identifier_value": "product-carousel-recommendation",
-          "required": true,
+          "required": false,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
             {
@@ -373,7 +373,7 @@
           "name": "Recommendation Carousels",
           "identifier_type": "class",
           "identifier_value": "Carousel-module__title___1nNbu",
-          "required": true,
+          "required": false,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
@@ -389,13 +389,13 @@
     },
     "CART": {
       "url_example": "https://www.sodimac.com.ar/sodimac-ar/cart/",
-      "setup_required": true,
+      "setup_required": false,
       "components": [
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
           "identifier_value": "carousel jq-scrollList",
-          "required": true,
+          "required": false,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
@@ -408,13 +408,13 @@
     },
     "XLP": {
       "url_example": "https://www.sodimac.com.ar/sodimac-ar/search?Ntt=caballo",
-      "setup_required": true,
+      "setup_required": false,
       "components": [
         {
           "name": "Recommendation Carousel",
           "identifier_type": "class",
           "identifier_value": "jsx-3574424537 recommendation-carousel",
-          "required": true,
+          "required": false,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
