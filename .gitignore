@@ -19,6 +19,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+*test_scrape_country_to_json.py
 
 # Virtual environments
 venv/
@@ -48,3 +49,4 @@ test-results/
 
 # Logs
 *.log
+*outputs/

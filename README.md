@@ -54,6 +54,22 @@ pip install -r requirements.txt
 python app.py
 ```
 
+## Test local por país (exporta alertas a JSON)
+
+Puedes ejecutar un test manual para un solo país y guardar el resultado en un archivo local:
+
+> Este script no guarda ni modifica datos en MongoDB; solo exporta JSON local.
+
+```bash
+python test_scrape_country_to_json.py --country CL
+python test_scrape_country_to_json.py --country PE --output ./outputs/alertas_pe.json
+```
+
+Parámetros disponibles:
+- `--country` (requerido): código de país en `config_components.json`
+- `--config` (opcional): ruta de configuración (default `config_components.json`)
+- `--output` (opcional): ruta de salida JSON (si no se envía, genera uno en `./outputs`)
+
 La UI de ejemplo (estática) está en el repo original; este backend no sirve `web/` en este split.
 
 ## Producción (ideas)
