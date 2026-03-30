@@ -299,9 +299,9 @@ class ComponentScraper:
                 for container_idx, container in enumerate(search_in):
                     container_text = container.get_text(strip=True)
                     normalized_container = self._normalize_text(container_text)
-                    normalized_pattern = self._normalize_text(strat['text_pattern'])
+                    normalized_patterns = [self._normalize_text(_text) for _text in strat['text_patterns']] if isinstance(strat['text_patterns'], list) else [self._normalize_text(strat['text_patterns'])]
                     
-                    if normalized_pattern in normalized_container:
+                    if any(pattern in normalized_container for pattern in normalized_patterns):
                         strategies_found[name] = True
                         strategies_details[name]['found_in'].append(label)
                         break

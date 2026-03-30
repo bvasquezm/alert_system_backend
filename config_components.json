@@ -285,7 +285,10 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_pattern": "¡Ultima Oportunidad en tus recientemente vistos!"
+              "text_patterns": [
+                "¡Ultima Oportunidad en tus recientemente vistos!",
+                "¡Buenos Precios en tus recientemente vistos!"
+              ]
             },
             {
               "strategy_name": "Viewed with Recently Viewed",
