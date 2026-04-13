@@ -31,7 +31,7 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "jsx-1601358630 products-carousel-wrapper",
+          "identifier_value": "jsx-3406171783 mobile-carousel",
           "required": true,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
@@ -146,7 +146,7 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "jsx-1601358630 products-carousel-wrapper",
+          "identifier_value": "jsx-3406171783 mobile-carousel",
           "required": true,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
@@ -256,7 +256,7 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "jsx-1601358630 products-carousel-wrapper",
+          "identifier_value": "jsx-3406171783 mobile-carousel",
           "required": true,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
@@ -321,7 +321,7 @@
   "AR": {
     "setup_product_url": "https://www.sodimac.com.ar/sodimac-ar/product/101949X/gazebo-fijo-de-poliester-y-metal-verde-con-base-3-x-3-m/101949X/",
     "PDP": {
-      "url_example": "https://www.sodimac.com.ar/sodimac-ar/product/9097902/silla-de-exterior-look-apilable-con-apoyabrazos-negra/9097902/",
+      "url_example": "https://www.sodimac.com.ar/sodimac-ar/product/905619X/kit-inodoro-largo-new-asis-dual-con-deposito-y-asiento-blanco/905619X/",
       "components": [
         {
           "name": "Shop the Project",
@@ -344,7 +344,7 @@
         {
           "name": "Tabla Comparativa",
           "identifier_type": "class",
-          "identifier_value": "comparator",
+          "identifier_value": "sc-jsJBEP icuiLZ",
           "required": false
         },
         {
@@ -355,8 +355,8 @@
         },
         {
           "name": "Recommendation Carousels",
-          "identifier_type": "data-testid",
-          "identifier_value": "product-carousel-recommendation",
+          "identifier_type": "class",
+          "identifier_value": "Carousel-module__title-container___19rDy",
           "required": false,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
