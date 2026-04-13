@@ -19,6 +19,8 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+countries_backlist = ['AR'] # Estos países están en la blacklist por incompatibilidades con el scraper actual - se agregarán en el futuro
+
 
 class ScraperOrchestrator:
     """Orquestador de scrapers para ejecución paralela por país"""
@@ -89,6 +91,9 @@ class ScraperOrchestrator:
         print(f"\n▶️  Iniciando job para {country.upper()}")
         
         try:
+            if country in countries_backlist:
+                raise NotImplementedError(f"Scraping para {country} está en backlist - no implementado")
+
             scraper = ComponentScraper(self.config_path)
             scraper.headless = self.headless
             
@@ -108,7 +113,6 @@ class ScraperOrchestrator:
                 print(f"  📄 Scrapeando {page_type}...")
                 
                 try:
-                    scraper.fetch_page(url)
                     result = scraper.scrape_page(
                         country,
                         page_type,
@@ -181,7 +185,17 @@ class ScraperOrchestrator:
                 'pages': results_by_page,
                 'timestamp': datetime.now().isoformat()
             }
-            
+
+        except NotImplementedError as nie:
+            logger.warning(str(nie))
+            print(f"⚠️  {nie}")
+            return {
+                'country': country,
+                'status': 'skipped',
+                'error': str(nie),
+                'timestamp': datetime.now().isoformat()
+            }
+        
         except Exception as e:
             logger.error(f"Error en job para {country.upper()}: {e}")
             print(f"❌ Error en job para {country.upper()}: {e}")

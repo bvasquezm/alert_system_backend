@@ -107,10 +107,18 @@ class ComponentScraper:
             
             print(f"  📦 Navegando a producto de setup: {setup_url}")
             try:
-                self.page.goto(setup_url, wait_until='domcontentloaded', timeout=5000)
+                self.page.goto(setup_url, wait_until='domcontentloaded', timeout=self.default_timeout_ms)
             except Exception as e:
                 print(f"  ❌ Error navegando al producto de setup: {e}")
                 return
+
+            # Scroll + wait para disparar tracking scripts (necesario para "Recently Viewed")
+            print(f"  📜 Esperando tracking scripts...")
+            time.sleep(2)
+            self.page.evaluate("window.scrollBy(0, 300)")
+            time.sleep(1)
+            self.page.evaluate("window.scrollTo(0, 0)")
+            time.sleep(1)
             
             print(f"  🎯 Buscando popover previo...")
             try:
@@ -130,13 +138,22 @@ class ComponentScraper:
             
             print(f"  🛒 Buscando botón 'Agregar al carro'...")
             try:
-                add_button = self.page.wait_for_selector('button#add-to-cart-button, button#testId-btn-add-to-cart', state='visible', timeout=6000)
+                add_to_cart_selectors = ', '.join([
+                    'button#add-to-cart-button',
+                    'button#testId-btn-add-to-cart',
+                    'button[data-testid="add-to-cart"]',
+                    'button[data-testid="btn-add-to-cart"]',
+                    '#btn-add-to-cart',
+                    'button.add-to-cart-button',
+                    '[data-testid="add-to-cart-button"]'
+                ])
+                add_button = self.page.wait_for_selector(add_to_cart_selectors, state='visible', timeout=15000)
                 print(f"  ✓ Botón encontrado, haciendo click...")
                 add_button.click()
                 print(f"  ✓ Click realizado")
                 
                 print(f"  ⏳ Esperando confirmación...")
-                time.sleep(3)
+                time.sleep(5)
                 print(f"  ✓ Producto agregado al carro")
                 
             except Exception as e:
@@ -293,6 +310,11 @@ class ComponentScraper:
                 container_class = strat.get('container_class')
                 if container_class:
                     search_in = el.find_all(class_=container_class)
+                    if not search_in:
+                        # Fallback: container_class no encontrada (posible cambio de hash CSS),
+                        # buscar en el elemento completo
+                        print(f"    ⚠️  container_class '{container_class}' no encontrada, fallback a elemento completo para '{name}'")
+                        search_in = [el]
                 else:
                     search_in = [el]
                 
@@ -335,7 +357,7 @@ class ComponentScraper:
         if found:
             result['details'] = self._build_component_details(component, elements)
         else:
-            self._log_component_not_found(component)
+            self._log_component_not_found(component, soup)
             # Si no se encontró pero tiene estrategias configuradas, construir details
             # con todas las estrategias marcadas como no encontradas
             if 'carousel_strategies' in component or 'text_strategies' in component:
@@ -351,13 +373,33 @@ class ComponentScraper:
 
         return result
     
-    def _log_component_not_found(self, component: Dict) -> None:
+    def _log_component_not_found(self, component: Dict, soup: BeautifulSoup = None) -> None:
         """Loguea cuando un componente no se encuentra"""
         identifier_type = component['identifier_type']
         identifier_value = component['identifier_value']
-        
-        if identifier_type == 'id':
-            print(f"    ⚠️  Elemento #{identifier_value} NO encontrado en el HTML")
+
+        print(f"    ⚠️  Componente '{component['name']}' NO encontrado "
+              f"({identifier_type}='{identifier_value}')")
+
+        # Para clases CSS-modules (contienen __), buscar clases similares por prefijo
+        if identifier_type == 'class' and soup:
+            class_parts = identifier_value.split()
+            for cls in class_parts:
+                if '__' in cls:
+                    prefix = cls.rsplit('___', 1)[0]  # ej: "Carousel-module__title"
+                    if prefix:
+                        similar = soup.find_all(
+                            class_=lambda c: c and any(prefix in cls_name for cls_name in (c if isinstance(c, list) else [c]))
+                        )
+                        if similar:
+                            actual_classes = set()
+                            for el in similar[:5]:
+                                for c in el.get('class', []):
+                                    if prefix in c:
+                                        actual_classes.add(c)
+                            if actual_classes:
+                                print(f"    🔍 DIAGNÓSTICO: Clases similares con prefijo '{prefix}': "
+                                      f"{', '.join(sorted(actual_classes))}")
 
     def scrape_page(self, country: str, page_type: str, url: str) -> Dict:
         """ Scrapea una página y verifica todos los componentes configurados. """
