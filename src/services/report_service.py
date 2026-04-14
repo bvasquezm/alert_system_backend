@@ -7,6 +7,7 @@ import logging
 from bson.json_util import dumps, loads
 
 logger = logging.getLogger(__name__)
+countries_blacklist = ['AR']
 
 
 def get_latest_report(results_collection) -> Optional[Dict]:
@@ -31,7 +32,7 @@ def get_latest_report(results_collection) -> Optional[Dict]:
             "total_alerts": country["alerts_count"],
             "status": country["status"],
             "timestamp": country["timestamp"]
-        } for country in latest_result.get('results', [])
+        } for country in latest_result.get('results', []) if country.get('country') not in countries_blacklist
     ]
     
     return loads(dumps(latest_result))
