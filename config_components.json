@@ -56,10 +56,18 @@
             {
               "strategy_name": "Recently Viewed",
               "text_patterns": "Últimos vistos"
-            },
+            }
+          ]
+        },
+        {
+          "name": "Popularity Carousels",
+          "identifier_type": "class",
+          "identifier_value": "ProductCardCarouselstyle__Title-sc-1q575xk-7 hAMNwI",
+          "required": true,
+          "text_strategies": [
             {
               "strategy_name": "Popularity",
-              "text_patterns": "Populares"
+              "text_patterns": "Productos populares"
             }
           ]
         }
