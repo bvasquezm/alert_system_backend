@@ -45,23 +45,35 @@ class ComponentScraper:
     
     def _init_browser(self):
         """Inicializa el browser de Playwright si no está iniciado"""
-        if not self.playwright:
-            self.playwright = sync_playwright().start()
-            self.browser = self.playwright.chromium.launch(
-                headless=self.headless,
-                args=[
-                    "--no-sandbox",
-                    "--ignore-certificate-errors",
-                    "--disable-dev-shm-usage"
-                ]
-            )
-            # Ignorar errores HTTPS por certificados no confiables
-            self.context = self.browser.new_context(ignore_https_errors=True)
-            # Establecer timeouts por defecto
-            self.context.set_default_navigation_timeout(self.default_timeout_ms)
-            self.context.set_default_timeout(self.default_timeout_ms)
+        if self.page is not None:
+            return
+
+        try:
+            if self.playwright is None:
+                self.playwright = sync_playwright().start()
+
+            if self.browser is None:
+                self.browser = self.playwright.chromium.launch(
+                    headless=self.headless,
+                    args=[
+                        "--no-sandbox",
+                        "--ignore-certificate-errors",
+                        "--disable-dev-shm-usage"
+                    ]
+                )
+
+            if self.context is None:
+                # Ignorar errores HTTPS por certificados no confiables
+                self.context = self.browser.new_context(ignore_https_errors=True)
+                # Establecer timeouts por defecto
+                self.context.set_default_navigation_timeout(self.default_timeout_ms)
+                self.context.set_default_timeout(self.default_timeout_ms)
+
             self.page = self.context.new_page()
             print("  🌐 Browser iniciado")
+        except Exception:
+            self._close_browser()
+            raise
     
     def _close_browser(self):
         """Cierra el browser de Playwright"""
