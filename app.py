@@ -268,9 +268,9 @@ def teams_report_send():
             }), 502
     
     except ValueError as e:
-        logger.error(f"ValueError en /api/teams/report: {str(e)}")
+        logger.warning(f"ValueError en /api/teams/report: {str(e)}")
         if 'not configured' in str(e):
-            return jsonify({'error': str(e)}), 500
+            return jsonify({'status': 'skipped', 'reason': 'webhook_not_configured'}), 200
         else:
             return jsonify({
                 'error': str(e),
