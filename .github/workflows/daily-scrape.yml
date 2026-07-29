@@ -88,6 +88,8 @@ jobs:
           echo "Report is recent (diff=${DIFF}s). Verification OK."
 
       - name: Send Teams report via API
+        if: ${{ secrets.TEAMS_WEBHOOK_URL != '' }}
+        continue-on-error: true
         run: |
           set -euo pipefail
           echo "Triggering Teams report via API..."
