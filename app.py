@@ -250,22 +250,38 @@ def alerts_report():
 
 @app.route('/api/teams/report', methods=['POST'])
 def teams_report_send():
-    """Generar y enviar reporte de alertas a Teams"""
+    """Generar y enviar reporte de alertas a Teams/webhook"""
     try:
-        webhook_url = os.getenv('TEAMS_WEBHOOK_URL')
-        
+        payload = request.get_json(silent=True) or {}
+        webhook_url = payload.get('webhook_url') or os.getenv('TEAMS_WEBHOOK_URL')
+
+        # Compatibilidad con webhooks tipo {"text":"Hello World"}.
+        text = payload.get('text')
+        if text is not None:
+            if not isinstance(text, str) or not text.strip():
+                return jsonify({'error': 'Invalid payload: text must be a non-empty string'}), 400
+
+            status_code = teams_service.send_to_teams_webhook(webhook_url, text)
+            if 200 <= status_code < 300:
+                return jsonify({'status': 'sent'}), 200
+
+            return jsonify({
+                'error': 'Teams webhook error',
+                'status': status_code
+            }), 502
+
         result = teams_service.generate_and_send_teams_report(
             results_collection,
             webhook_url
         )
-        
+
         if result['status'] == 'sent':
             return jsonify({'status': 'sent'}), 200
-        else:
-            return jsonify({
-                'error': 'Teams webhook error',
-                'status': result['status_code']
-            }), 502
+
+        return jsonify({
+            'error': 'Teams webhook error',
+            'status': result.get('status_code')
+        }), 502
     
     except ValueError as e:
         logger.warning(f"ValueError en /api/teams/report: {str(e)}")
@@ -282,6 +298,13 @@ def teams_report_send():
         return jsonify({
             'error': 'Teams webhook HTTPError',
             'status': e.code
+        }), 502
+
+    except urllib.error.URLError as e:
+        logger.error(f"Teams webhook URLError: {str(e)}")
+        return jsonify({
+            'error': 'Teams webhook URLError',
+            'reason': str(e)
         }), 502
     
     except Exception as e:

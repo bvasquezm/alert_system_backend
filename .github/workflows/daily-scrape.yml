@@ -91,7 +91,8 @@ jobs:
         run: |
           set -euo pipefail
           echo "Triggering Teams report via API..."
-          RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/teams/report" -H "Content-Type: application/json" -w "\n%{http_code}")
+          PAYLOAD=$(jq -nc --arg webhook_url "${TEAMS_WEBHOOK_URL:-}" '{webhook_url: $webhook_url}')
+          RESP=$(curl -sS -L -X POST "${API_BASE_URL}/api/teams/report" -H "Content-Type: application/json" -d "$PAYLOAD" -w "\n%{http_code}")
           BODY=$(echo "$RESP" | sed '$d')
           CODE=$(echo "$RESP" | tail -n1)
           echo "HTTP $CODE"
