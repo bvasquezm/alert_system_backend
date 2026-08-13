@@ -38,6 +38,7 @@ class ComponentScraper:
     # Utilidad para normalizar texto y hacer match parcial robusto
     def _normalize_text(self, text: str) -> str:
         normalized = unicodedata.normalize('NFKD', text)
+        normalized = normalized.lower()
         return normalized.encode('ascii', 'ignore').decode('ascii').lower()
 
     def _partial_match(self, text: str, pattern: str) -> bool:

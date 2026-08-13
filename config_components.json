@@ -50,12 +50,29 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "DesktopCarouselstyle__TitleText-sc-i42bww-1 jrXWNX",
+          "identifier_value": "DesktopCarouselstyle__TitleText-core-ui-kit__sc-i42bww-1 phTPi",
           "required": true,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Últimos vistos"
+              "text_patterns": [
+                "Últimos Vistos",
+                "Vistos Recientemente"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Recommendation Carousels",
+          "identifier_type": "class",
+          "identifier_value": "DesktopCarouselstyle__TitleText-core-ui-kit__sc-i42bww-1 phTPi",
+          "required": true,
+          "text_strategies": [
+            {
+              "strategy_name": "Viewed With Recently Viewed",
+              "text_patterns": [
+                "Inspirado en lo que viste"
+              ]
             }
           ]
         },
@@ -67,7 +84,7 @@
           "text_strategies": [
             {
               "strategy_name": "Popularity",
-              "text_patterns": "Productos populares"
+              "text_patterns": ["Productos populares"]
             }
           ]
         }
@@ -85,17 +102,17 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Suma productos que has visto",
+              "text_patterns": ["Suma productos que has visto"],
               "container_class": "jsx-1685098791 title desktop"
             },
             {
               "strategy_name": "Cross Cart",
-              "text_patterns": "No lo olvides",
+              "text_patterns": ["No lo olvides"],
               "container_class": "jsx-1685098791 title desktop"
             },
             {
               "strategy_name": "Comercial Bet [Impulse Products]",
-              "text_patterns": "¿Y si sumas lo último?",
+              "text_patterns": ["¿Y si sumas lo último?"],
               "container_class": "jsx-1685098791 title desktop"
             }
           ]
@@ -114,7 +131,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Vistos Recientemente",
+              "text_patterns": ["Vistos Recientemente"],
               "container_class": "jsx-1685098791 title desktop"
             }
           ]
@@ -161,7 +178,7 @@
             {
               "strategy_name": "Upsell",
               "container_class": "jsx-2800840357",
-              "text_patterns": "Más opciones para elegir"
+              "text_patterns": ["Más opciones para elegir"]
             }
           ]
         }
@@ -173,16 +190,19 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "DesktopCarouselstyle__TitleText-sc-i42bww-1 jrXWNX",
+          "identifier_value": "DesktopCarouselstyle__TitleText-core-ui-kit__sc-i42bww-1 phTPi",
           "required": true,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Tus últimos vistos"
+              "text_patterns": [
+                "Tus últimos vistos",
+                "Tus ultimos vistos"
+              ]
             },
             {
               "strategy_name": "Viewed with Recently Viewed",
-              "text_patterns": "Inspirado en lo que viste"
+              "text_patterns": ["Inspirado en lo que viste"]
             }
           ]
         }
@@ -200,7 +220,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "No dejes de llevártelos",
+              "text_patterns": ["No dejes de llevártelos"],
               "container_class": "jsx-1685098791 title desktop"
             },
             {
@@ -271,12 +291,12 @@
             {
               "strategy_name": "Upsell",
               "container_class": "jsx-2800840357",
-              "text_patterns": "Más opciones para elegir"
+              "text_patterns": ["Más opciones para elegir"]
             },
             {
               "strategy_name": "Cross Sell",
               "container_class": "jsx-2800840357",
-              "text_patterns": "Complementa tu proyecto"
+              "text_patterns": ["Complementa tu proyecto"]
             }
           ]
         }
@@ -288,19 +308,20 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "DesktopCarouselstyle__TitleText-sc-i42bww-1 jrXWNX",
+          "identifier_value": "DesktopCarouselstyle__TitleText-core-ui-kit__sc-i42bww-1 phTPi",
           "required": true,
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
               "text_patterns": [
                 "¡Ultima Oportunidad en tus recientemente vistos!",
-                "¡Buenos Precios en tus recientemente vistos!"
+                "¡Buenos Precios en tus recientemente vistos!",
+                "Buenos Precios en tus recientemente vistos"
               ]
             },
             {
               "strategy_name": "Viewed with Recently Viewed",
-              "text_patterns": "Inspirado en lo que viste"
+              "text_patterns": ["Inspirado en lo que viste"]
             }
           ]
         }
@@ -318,7 +339,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Últimos vistos",
+              "text_patterns": ["Últimos vistos"],
               "container_class": "jsx-1685098791 title desktop"
             }
           ]
@@ -371,7 +392,7 @@
             {
               "strategy_name": "Upsell",
               "container_class": "Carousel-module__title___1nNbu",
-              "text_patterns": "Más opciones para elegir"
+              "text_patterns": ["Más opciones para elegir"]
             }
           ]
         }
@@ -388,11 +409,11 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Últimos vistos"
+              "text_patterns": ["Últimos vistos"]
             },
             {
               "strategy_name": "Viewed with Recently Viewed",
-              "text_patterns": "Inspirado en lo que viste"
+              "text_patterns": ["Inspirado en lo que viste"]
             }
           ]
         }
@@ -410,7 +431,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Suma productos que viste",
+              "text_patterns": ["Suma productos que viste"],
               "container_class": "pt-15"
             }
           ]
@@ -429,7 +450,7 @@
           "text_strategies": [
             {
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Vistos recientemente",
+              "text_patterns": ["Vistos recientemente"],
               "container_class": "Carousel-module__title___1nNbu"
             }
           ]
@@ -482,7 +503,11 @@
             {
               "strategy_name": "Upsell",
               "container_class": "Carousel-module__title___1nNbu",
-              "text_patterns": "Mais opções para escolher"
+              "text_patterns": [
+                "Mais opções para escolher",
+                "Otras opções para escolher"
+              
+              ]
             }
           ]
         }
