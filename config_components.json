@@ -1,4 +1,4 @@
-{
+ {
   "CL": {
     "setup_product_url": "https://www.sodimac.cl/sodimac-cl/articulo/110574261/toldo-plegable-3x3-metros-azul/110574262",
     "PDP": {
@@ -79,7 +79,7 @@
         {
           "name": "Popularity Carousels",
           "identifier_type": "class",
-          "identifier_value": "ProductCardCarouselstyle__Title-sc-1q575xk-7 hAMNwI",
+          "identifier_value": "ProductCardCarouselstyle__Title-core-ui-kit__sc-1q575xk-7 wBJBV",
           "required": true,
           "text_strategies": [
             {
