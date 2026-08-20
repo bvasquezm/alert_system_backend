@@ -461,7 +461,7 @@
   "BR": {
     "setup_product_url": "https://www.sodimac.com.br/sodimac-br/product/558189/gazebo-montavel-300x300cm-branco-just-home-collection/558189/",
     "PDP": {
-      "url_example": "https://www.sodimac.com.br/sodimac-br/product/1026607/kit-vaso-sanitario-com-caixa-acoplada-e-assento-branco-duplo-acionamento-3-6l-saida-vertical-round-roca/1026607/",
+      "url_example": "https://www.sodimac.com.br/sodimac-br/product/785099/kit-vaso-sanitario-com-caixa-acoplada-e-assento-branco-duplo-acionamento-3-6l-saida-vertical-like-celite/785099/",
       "components": [
         {
           "name": "Shop the Project",
@@ -488,25 +488,25 @@
           "required": true
         },
         {
-          "name": "Cross Sell",
-          "identifier_type": "class",
-          "identifier_value": "jsx-2454217370 cross-selling-container-v2",
-          "required": true
-        },
-        {
           "name": "Recommendation Carousels",
-          "identifier_type": "data-testid",
-          "identifier_value": "product-carousel-recommendation",
+          "identifier_type": "class",
+          "identifier_value": "jsx-1972205225 mobile-carousel__header",
           "required": true,
           "note": "Busca múltiples carruseles con patrón carrusel-recs-1, carrusel-recs-2, etc",
           "carousel_strategies": [
             {
               "strategy_name": "Upsell",
-              "container_class": "Carousel-module__title___1nNbu",
+              "container_class": "jsx-2800840357 title15",
               "text_patterns": [
                 "Mais opções para escolher",
                 "Otras opções para escolher"
-              
+              ]
+            },
+            {
+              "strategy_name": "Cross Sell",
+              "container_class": "jsx-2800840357 title15",
+              "text_patterns": [
+                "Complementa seu produto"
               ]
             }
           ]
@@ -519,7 +519,7 @@
         {
           "name": "Recommendation Carousels",
           "identifier_type": "class",
-          "identifier_value": "Carousel-module__title___1nNbu",
+          "identifier_value": "DesktopCarouselstyle__TitleText-core-ui-kit__sc-i42bww-1 phTPi",
           "required": true,
           "text_strategies": [
             {
@@ -545,13 +545,13 @@
         {
           "name": "Recommendation Carousel",
           "identifier_type": "class",
-          "identifier_value": "jsx-3574424537 recommendation-carousel",
+          "identifier_value": "jsx-2802252101 recommended-products-container",
           "required": true,
           "text_strategies": [
             {
+              "container_class": "jsx-1685098791 title desktop",
               "strategy_name": "Recently Viewed",
-              "text_patterns": "Vistos recentemente",
-              "container_class": "Carousel-module__title___1nNbu"
+              "text_patterns": "Vistos recentemente"
             }
           ]
         }

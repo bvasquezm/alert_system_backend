@@ -117,7 +117,6 @@ def get_alerts():
             'type': type(e).__name__
         }), 500
 
-
 @app.route('/api/alerts/stats', methods=['GET'])
 def get_alerts_stats():
     """Obtener estadísticas de alertas"""
